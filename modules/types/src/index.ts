@@ -1,1 +1,1 @@
-export {TypedArray, NumberArray, NumericArray} from './number-array';
+export {TypedArray, TypedArrayConstructor, NumberArray, NumericArray} from './number-array';

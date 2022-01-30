@@ -3,6 +3,9 @@
 import {NumericArray} from '@math.gl/types';
 import assert from './assert';
 
+const RADIANS_TO_DEGREES = (1 / Math.PI) * 180;
+const DEGREES_TO_RADIANS = (1 / 180) * Math.PI;
+
 export type ConfigurationOptions = {
   EPSILON?: number;
   debug?: boolean;
@@ -13,19 +16,27 @@ export type ConfigurationOptions = {
   _cartographicRadians?: boolean;
 };
 
-const RADIANS_TO_DEGREES = (1 / Math.PI) * 180;
-const DEGREES_TO_RADIANS = (1 / 180) * Math.PI;
+const DEFAULT_CONFIG: Required<ConfigurationOptions> = {
+  EPSILON: 1e-12,
+  debug: false,
+  precision: 4,
+  printTypes: false,
+  printDegrees: false,
+  printRowMajor: true,
+  _cartographicRadians: false
+};
 
-// TODO - remove
-/* eslint-disable no-shadow */
-export const config: ConfigurationOptions = {};
+declare global {
+  var mathgl: {
+    config: Required<ConfigurationOptions>
+  };
+}
 
-config.EPSILON = 1e-12;
-config.debug = false;
-config.precision = 4;
-config.printTypes = false;
-config.printDegrees = false;
-config.printRowMajor = true;
+// Configuration is truly global as of v3.6 to ensure single config even if multiple copies of math.gl
+// Multiple copies of config can be quite tricky to debug...
+globalThis.mathgl = globalThis.mathgl || {config: {...DEFAULT_CONFIG}};
+
+export const config: ConfigurationOptions = globalThis.mathgl.config;
 
 export function configure(options: ConfigurationOptions = {}): ConfigurationOptions {
   // Only copy existing keys
